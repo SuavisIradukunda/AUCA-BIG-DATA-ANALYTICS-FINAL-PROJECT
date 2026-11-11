@@ -1,0 +1,44 @@
+# HBase schema for the e-commerce project.
+# Run with:  hbase shell part1_hbase/schema.hbase
+# (inside Docker: docker compose exec hbase hbase shell /project/part1_hbase/schema.hbase)
+#
+# ---------------------------------------------------------------------------
+# Table 1: user_sessions  - time-series browsing activity per user
+#   Row key : <user_id>#<reverse_ts>#<session_id>
+#             reverse_ts = 9999999999 - start_time_epoch_seconds (10 digits, zero padded)
+#             -> all sessions of a user are contiguous (prefix scan) and sorted
+#                NEWEST FIRST, so "last N sessions of user X" is a scan with LIMIT N.
+#             -> a time range for a user is a STARTROW/STOPROW scan.
+#             user_id prefix spreads writes across regions (no timestamp hot-spotting).
+#   Families (short names = smaller on-disk keys, every cell stores its family name):
+#     s  : session metadata (start, end, dur, device, os, browser, referrer, status, geo...)
+#     pv : page views, one column per view, qualifier = 3-digit sequence number,
+#          value = "timestamp|page_type|product_id|category_id|view_duration"
+#          (sparse: 4-16 columns per row, varying per session)
+#     c  : cart contents, qualifier = product_id, value = "quantity|unit_price" (sparse)
+#   Families are separated because they are read independently
+#   (e.g. a session list reads only 's'; journey analysis reads 'pv').
+# ---------------------------------------------------------------------------
+create 'user_sessions',
+  {NAME => 's',  VERSIONS => 1, BLOOMFILTER => 'ROW', COMPRESSION => 'SNAPPY'},
+  {NAME => 'pv', VERSIONS => 1, BLOOMFILTER => 'ROW', COMPRESSION => 'SNAPPY'},
+  {NAME => 'c',  VERSIONS => 1, BLOOMFILTER => 'ROW', COMPRESSION => 'SNAPPY'},
+  SPLITS => ['user_002000', 'user_004000', 'user_006000', 'user_008000']
+
+# ---------------------------------------------------------------------------
+# Table 2: product_metrics - daily performance per product
+#   Row key : <product_id>#<yyyymmdd>
+#             -> one product's history is a contiguous, date-ordered range:
+#                time-range scans for view-to-purchase conversion per period.
+#   Family m: views, cart_adds, cart_units, purchases, units_sold, revenue
+#             (in a live system these would be HBase counters updated with INCR)
+# ---------------------------------------------------------------------------
+create 'product_metrics',
+  {NAME => 'm', VERSIONS => 1, BLOOMFILTER => 'ROW', COMPRESSION => 'SNAPPY'},
+  SPLITS => ['prod_01000', 'prod_02000', 'prod_03000', 'prod_04000']
+
+# Note: if the HBase image has no native Snappy libraries, remove COMPRESSION => 'SNAPPY'.
+
+list
+describe 'user_sessions'
+describe 'product_metrics'

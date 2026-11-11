@@ -1,0 +1,39 @@
+
+[1] 5 most recent sessions of user_000002  (85.1 ms)
+  user_000002#8206537965#sess_f0281945a2  {'s:device': 'mobile', 's:dur': '3248', 's:n_pages': '6', 's:referrer': 'search_engine', 's:start': '2026-10-31T15:53:54', 's:status': 'browsed'}
+  user_000002#8206556578#sess_b6608f1452  {'s:device': 'mobile', 's:dur': '2044', 's:n_pages': '11', 's:referrer': 'affiliate', 's:start': '2026-10-31T10:43:41', 's:status': 'abandoned'}
+  user_000002#8206604682#sess_f1b427d835  {'s:device': 'desktop', 's:dur': '1462', 's:n_pages': '13', 's:referrer': 'affiliate', 's:start': '2026-10-30T21:21:57', 's:status': 'abandoned'}
+  user_000002#8206612910#sess_1433a0403d  {'s:device': 'mobile', 's:dur': '1402', 's:n_pages': '9', 's:referrer': 'search_engine', 's:start': '2026-10-30T19:04:49', 's:status': 'abandoned'}
+  user_000002#8206637786#sess_7ff1abb318  {'s:device': 'mobile', 's:dur': '474', 's:n_pages': '13', 's:referrer': 'search_engine', 's:start': '2026-10-30T12:10:13', 's:status': 'converted'}
+
+[2] user_000002 sessions 2026-10-01..2026-10-15: 31 rows (26.3 ms)
+   ('user_000002#8207920456#sess_05f671e55c', '2026-10-15T15:52:23', 'abandoned')
+   ('user_000002#8207936591#sess_1f9cac08d7', '2026-10-15T11:23:28', 'abandoned')
+   ('user_000002#8207947569#sess_74c7aa3725', '2026-10-15T08:20:30', 'converted')
+   ('user_000002#8207951727#sess_f9e6178c40', '2026-10-15T07:11:12', 'abandoned')
+   ('user_000002#8207966226#sess_1d775761b6', '2026-10-15T03:09:33', 'converted')
+
+[3] journey of user_000002#8206537965#sess_f0281945a2: 6 page views, cart={}
+   {'timestamp': '2026-10-31T15:53:54', 'page_type': 'search', 'product_id': None, 'category_id': None, 'view_duration': 923}
+   {'timestamp': '2026-10-31T16:09:17', 'page_type': 'product_detail', 'product_id': 'prod_00226', 'category_id': 'cat_024', 'view_duration': 349}
+   {'timestamp': '2026-10-31T16:15:06', 'page_type': 'cart', 'product_id': None, 'category_id': None, 'view_duration': 463}
+   {'timestamp': '2026-10-31T16:22:49', 'page_type': 'cart', 'product_id': None, 'category_id': None, 'view_duration': 805}
+   {'timestamp': '2026-10-31T16:36:14', 'page_type': 'cart', 'product_id': None, 'category_id': None, 'view_duration': 605}
+   {'timestamp': '2026-10-31T16:46:19', 'page_type': 'home', 'product_id': None, 'category_id': None, 'view_duration': 103}
+
+[4] weekly conversion for prod_00123 (61.4 ms)
+   {'week': '2026-08-03', 'views': 137, 'cart_adds': 43, 'purchases': 16, 'revenue': 3272.01, 'view_to_cart_%': 31.4, 'view_to_purchase_%': 11.7}
+   {'week': '2026-08-10', 'views': 115, 'cart_adds': 33, 'purchases': 13, 'revenue': 2355.41, 'view_to_cart_%': 28.7, 'view_to_purchase_%': 11.3}
+   {'week': '2026-08-17', 'views': 134, 'cart_adds': 32, 'purchases': 13, 'revenue': 2275.48, 'view_to_cart_%': 23.9, 'view_to_purchase_%': 9.7}
+   {'week': '2026-08-24', 'views': 119, 'cart_adds': 36, 'purchases': 17, 'revenue': 3389.24, 'view_to_cart_%': 30.3, 'view_to_purchase_%': 14.3}
+   {'week': '2026-08-31', 'views': 142, 'cart_adds': 44, 'purchases': 17, 'revenue': 3245.34, 'view_to_cart_%': 31.0, 'view_to_purchase_%': 12.0}
+   {'week': '2026-09-07', 'views': 124, 'cart_adds': 26, 'purchases': 17, 'revenue': 3495.82, 'view_to_cart_%': 21.0, 'view_to_purchase_%': 13.7}
+   {'week': '2026-09-14', 'views': 132, 'cart_adds': 37, 'purchases': 23, 'revenue': 4886.69, 'view_to_cart_%': 28.0, 'view_to_purchase_%': 17.4}
+   {'week': '2026-09-21', 'views': 141, 'cart_adds': 34, 'purchases': 20, 'revenue': 4247.22, 'view_to_cart_%': 24.1, 'view_to_purchase_%': 14.2}
+   {'week': '2026-09-28', 'views': 162, 'cart_adds': 62, 'purchases': 26, 'revenue': 5728.68, 'view_to_cart_%': 38.3, 'view_to_purchase_%': 16.0}
+   {'week': '2026-10-05', 'views': 170, 'cart_adds': 51, 'purchases': 16, 'revenue': 3234.69, 'view_to_cart_%': 30.0, 'view_to_purchase_%': 9.4}
+   {'week': '2026-10-12', 'views': 166, 'cart_adds': 56, 'purchases': 20, 'revenue': 4801.43, 'view_to_cart_%': 33.7, 'view_to_purchase_%': 12.0}
+   {'week': '2026-10-19', 'views': 174, 'cart_adds': 50, 'purchases': 15, 'revenue': 3490.49, 'view_to_cart_%': 28.7, 'view_to_purchase_%': 8.6}
+   {'week': '2026-10-26', 'views': 135, 'cart_adds': 43, 'purchases': 15, 'revenue': 2824.37, 'view_to_cart_%': 31.9, 'view_to_purchase_%': 11.1}
+
+[5] engagement of user_000002 (0.0 ms): {'user_id': 'user_000002', 'sessions': 204, 'avg_session_sec': 1840.1, 'avg_pages': 10.23, 'converted_sessions': 48, 'abandoned_sessions': 84, 'cart_abandonment_rate': 0.636, 'first_session': '2026-08-03T02:58:29', 'last_session': '2026-10-31T15:53:54'}

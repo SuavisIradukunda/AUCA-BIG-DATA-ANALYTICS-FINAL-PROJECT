@@ -1,0 +1,331 @@
+{
+  "revenue_by_category_month": [
+    {
+      "$match": {
+        "status": {
+          "$in": [
+            "completed",
+            "processing",
+            "shipped",
+            "delivered"
+          ]
+        }
+      }
+    },
+    {
+      "$addFields": {
+        "net_ratio": {
+          "$cond": [
+            {
+              "$gt": [
+                "$subtotal",
+                0
+              ]
+            },
+            {
+              "$divide": [
+                "$total",
+                "$subtotal"
+              ]
+            },
+            1
+          ]
+        }
+      }
+    },
+    {
+      "$unwind": "$items"
+    },
+    {
+      "$group": {
+        "_id": {
+          "category_id": "$items.category_id",
+          "month": {
+            "$dateToString": {
+              "format": "%Y-%m",
+              "date": "$timestamp"
+            }
+          }
+        },
+        "net_revenue": {
+          "$sum": {
+            "$multiply": [
+              "$items.subtotal",
+              "$net_ratio"
+            ]
+          }
+        },
+        "gross_margin": {
+          "$sum": {
+            "$multiply": [
+              "$items.subtotal",
+              "$net_ratio",
+              "$items.profit_margin"
+            ]
+          }
+        },
+        "units": {
+          "$sum": "$items.quantity"
+        },
+        "line_items": {
+          "$sum": 1
+        }
+      }
+    },
+    {
+      "$lookup": {
+        "from": "categories",
+        "localField": "_id.category_id",
+        "foreignField": "_id",
+        "as": "cat"
+      }
+    },
+    {
+      "$project": {
+        "_id": 0,
+        "category_id": "$_id.category_id",
+        "category_name": {
+          "$first": "$cat.name"
+        },
+        "month": "$_id.month",
+        "net_revenue": {
+          "$round": [
+            "$net_revenue",
+            2
+          ]
+        },
+        "gross_margin": {
+          "$round": [
+            "$gross_margin",
+            2
+          ]
+        },
+        "margin_pct": {
+          "$round": [
+            {
+              "$multiply": [
+                {
+                  "$divide": [
+                    "$gross_margin",
+                    "$net_revenue"
+                  ]
+                },
+                100
+              ]
+            },
+            1
+          ]
+        },
+        "units": 1,
+        "line_items": 1
+      }
+    },
+    {
+      "$sort": {
+        "month": 1,
+        "net_revenue": -1
+      }
+    }
+  ],
+  "top_products": [
+    {
+      "$unwind": "$items"
+    },
+    {
+      "$group": {
+        "_id": "$items.product_id",
+        "units_sold": {
+          "$sum": "$items.quantity"
+        },
+        "revenue": {
+          "$sum": "$items.subtotal"
+        },
+        "orders": {
+          "$sum": 1
+        },
+        "buyers": {
+          "$addToSet": "$user_id"
+        },
+        "avg_unit_price": {
+          "$avg": "$items.unit_price"
+        }
+      }
+    },
+    {
+      "$sort": {
+        "units_sold": -1,
+        "revenue": -1
+      }
+    },
+    {
+      "$limit": 25
+    },
+    {
+      "$lookup": {
+        "from": "products",
+        "localField": "_id",
+        "foreignField": "_id",
+        "pipeline": [
+          {
+            "$project": {
+              "name": 1,
+              "category.name": 1,
+              "current_stock": 1,
+              "is_active": 1
+            }
+          }
+        ],
+        "as": "product"
+      }
+    },
+    {
+      "$unwind": "$product"
+    },
+    {
+      "$project": {
+        "_id": 0,
+        "product_id": "$_id",
+        "name": "$product.name",
+        "category": "$product.category.name",
+        "units_sold": 1,
+        "orders": 1,
+        "revenue": {
+          "$round": [
+            "$revenue",
+            2
+          ]
+        },
+        "avg_unit_price": {
+          "$round": [
+            "$avg_unit_price",
+            2
+          ]
+        },
+        "distinct_buyers": {
+          "$size": "$buyers"
+        },
+        "current_stock": "$product.current_stock",
+        "is_active": "$product.is_active"
+      }
+    }
+  ],
+  "user_segmentation": [
+    {
+      "$addFields": {
+        "days_since_purchase": {
+          "$cond": [
+            "$purchase_summary.last_purchase",
+            {
+              "$dateDiff": {
+                "startDate": "$purchase_summary.last_purchase",
+                "endDate": "2026-10-31 23:59:59",
+                "unit": "day"
+              }
+            },
+            null
+          ]
+        }
+      }
+    },
+    {
+      "$facet": {
+        "by_age_group": [
+          {
+            "$group": {
+              "_id": "$age_group",
+              "users": {
+                "$sum": 1
+              },
+              "avg_spent": {
+                "$avg": "$purchase_summary.total_spent"
+              },
+              "avg_orders": {
+                "$avg": "$purchase_summary.total_orders"
+              },
+              "avg_order_value": {
+                "$avg": "$purchase_summary.avg_order_value"
+              },
+              "total_revenue": {
+                "$sum": "$purchase_summary.total_spent"
+              }
+            }
+          },
+          {
+            "$sort": {
+              "_id": 1
+            }
+          }
+        ],
+        "by_purchase_frequency": [
+          {
+            "$bucket": {
+              "groupBy": "$purchase_summary.total_orders",
+              "boundaries": [
+                0,
+                1,
+                30,
+                45,
+                60,
+                75,
+                10000
+              ],
+              "default": "other",
+              "output": {
+                "users": {
+                  "$sum": 1
+                },
+                "avg_spent": {
+                  "$avg": "$purchase_summary.total_spent"
+                },
+                "revenue": {
+                  "$sum": "$purchase_summary.total_spent"
+                }
+              }
+            }
+          }
+        ],
+        "by_spend_quartile": [
+          {
+            "$bucketAuto": {
+              "groupBy": "$purchase_summary.total_spent",
+              "buckets": 4,
+              "output": {
+                "users": {
+                  "$sum": 1
+                },
+                "avg_spent": {
+                  "$avg": "$purchase_summary.total_spent"
+                },
+                "avg_orders": {
+                  "$avg": "$purchase_summary.total_orders"
+                },
+                "avg_order_value": {
+                  "$avg": "$purchase_summary.avg_order_value"
+                },
+                "revenue": {
+                  "$sum": "$purchase_summary.total_spent"
+                },
+                "avg_days_since_purchase": {
+                  "$avg": "$days_since_purchase"
+                }
+              }
+            }
+          },
+          {
+            "$project": {
+              "_id": 0,
+              "min_spent": "$_id.min",
+              "max_spent": "$_id.max",
+              "users": 1,
+              "avg_spent": 1,
+              "avg_orders": 1,
+              "avg_order_value": 1,
+              "revenue": 1,
+              "avg_days_since_purchase": 1
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

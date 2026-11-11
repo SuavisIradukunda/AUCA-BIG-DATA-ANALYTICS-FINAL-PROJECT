@@ -1,0 +1,6 @@
+rec_id,product_id,bought_score,bought_lift,viewed_score,viewed_lift,score,rank,rec_name,rec_category
+prod_02590,prod_00123,0.75,30.887076847047194,0.2727272727272727,1.7475511879569405,0.6068181818181817,1,Virtual Maximized Open System,"Anderson, Walls and Duncan"
+prod_00569,prod_00123,0.0,0.0,0.7272727272727273,4.756195025199057,0.21818181818181817,2,Managed Client-Server Challenge,"Brewer, Bryant and Hickman"
+prod_00393,prod_00123,0.0,0.0,0.6363636363636364,4.13861429997411,0.1909090909090909,3,Compatible Attitude-Oriented Graphic Interface,King-Odonnell
+prod_01921,prod_00123,0.0,0.0,0.6363636363636364,4.086542019394567,0.1909090909090909,4,Streamlined Asynchronous Model,"Brewer, Bryant and Hickman"
+prod_03594,prod_00123,0.0,0.0,0.6363636363636364,4.106761303712627,0.1909090909090909,5,Extended Logistical Leverage,Powell PLC

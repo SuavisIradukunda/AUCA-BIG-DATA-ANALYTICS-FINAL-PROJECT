@@ -1,0 +1,31 @@
+# Sample HBase shell queries (run after load_hbase.py).
+# hbase shell part1_hbase/sample_queries.hbase
+
+# 1. The 5 most recent sessions of a user (reverse timestamp -> newest first), metadata only
+scan 'user_sessions', {ROWPREFIXFILTER => 'user_000042#', COLUMNS => ['s'], LIMIT => 5}
+
+# 2. One full session (metadata + page views + cart) by its exact row key
+#    (row key taken from the output of query 1)
+# get 'user_sessions', 'user_000042#<reverse_ts>#<session_id>'
+
+# 3. A user's sessions in a time window (2026-10-01 .. 2026-10-15).
+#    Reverse timestamps invert the order: STARTROW uses the END of the window.
+#    STARTROW = 9999999999 - epoch(2026-10-16 00:00 UTC) + 1 = 8207891200
+#    STOPROW  = 9999999999 - epoch(2026-10-01 00:00 UTC) + 1 = 8209187200
+#    (computed by part1_hbase/keys.py:user_time_range)
+scan 'user_sessions', {STARTROW => 'user_000042#8207891200', STOPROW => 'user_000042#8209187200', COLUMNS => ['s:start', 's:status', 's:referrer']}
+
+# 4. Converted sessions of a user (server-side filter on a column value)
+scan 'user_sessions', {ROWPREFIXFILTER => 'user_000042#', COLUMNS => ['s:start','s:status'], FILTER => "SingleColumnValueFilter('s', 'status', =, 'binary:converted', true, true)"}
+
+# 5. Only the page-view journey of a user's sessions
+scan 'user_sessions', {ROWPREFIXFILTER => 'user_000042#', COLUMNS => ['pv'], LIMIT => 2}
+
+# 6. Daily metrics for one product over October 2026
+scan 'product_metrics', {STARTROW => 'prod_00123#20261001', STOPROW => 'prod_00123#20261101'}
+
+# 7. One product-day
+get 'product_metrics', 'prod_00123#20261015'
+
+# 8. Row counts
+count 'product_metrics', INTERVAL => 100000
